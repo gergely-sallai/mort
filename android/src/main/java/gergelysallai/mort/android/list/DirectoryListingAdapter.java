@@ -18,8 +18,6 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
     private final OnItemClickListener<RemoteDirectoryEntry> itemClickListener;
 
     private DirectoryListing directoryListing;
-    private boolean hasParentItem;
-    private int itemCount;
 
     DirectoryListingAdapter(OnItemClickListener<RemoteDirectoryEntry> itemClickListener) {
         this.itemClickListener = itemClickListener;
@@ -41,42 +39,32 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
 
     @Override
     public void onBindViewHolder(ViewHolderBase holder, int position) {
-        if (isParent(position)) {
-            holder.bind(directoryListing.parent);
-        } else {
-            holder.bind(directoryListing.entries.get(position - parentOffset(hasParentItem)));
-        }
+        holder.bind(directoryListing.entries.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return itemCount;
+        return directoryListing.entries.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (isParent(position)) {
+        RemoteDirectoryEntry entry = directoryListing.entries.get(position);
+        if (isParent(entry)) {
             return TYPE_PARENT;
         }
-        RemoteDirectoryEntry entry = directoryListing.entries.get(position - parentOffset(hasParentItem));
         if (entry.isDirectory) {
             return TYPE_DIRECTORY;
         }
         return TYPE_FILE;
     }
 
-    private boolean isParent(int position) {
-        return position == 0 && hasParentItem;
-    }
-
-    private int parentOffset(boolean hasParentItem) {
-        return (hasParentItem ? 1 : 0);
+    private boolean isParent(RemoteDirectoryEntry entry) {
+        return entry.fileName.equals("..");
     }
 
     private void updateDirectoryListing(DirectoryListing directoryListing) {
         this.directoryListing = directoryListing;
-        this.hasParentItem = directoryListing.parent != null;
-        this.itemCount = directoryListing.entries.size() + parentOffset(hasParentItem);
         notifyDataSetChanged();
     }
 

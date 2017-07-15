@@ -24,6 +24,5 @@ data class RemoteDirectoryEntry(
 
 data class DirectoryListing(
         @JvmField val current: RemoteDirectoryEntry,
-        @JvmField val parent:  RemoteDirectoryEntry? = null,
         @JvmField val entries: List<RemoteDirectoryEntry> = listOf()
 )

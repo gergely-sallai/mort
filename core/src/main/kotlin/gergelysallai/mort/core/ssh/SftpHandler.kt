@@ -19,7 +19,7 @@ class SftpHandler(private val sftpClient: SFTPv3Client,
             try {
                 val ls: Vector<SFTPv3DirectoryEntry> = sftpClient.ls(directory.fileName) as Vector<SFTPv3DirectoryEntry> // Lib is shitty had to force it :(
                 val entries = ls.map { RemoteDirectoryEntry.fromSFTPv3DirectoryEntry(it) }
-                val directoryListing = DirectoryListing(directory, null, entries)
+                val directoryListing = DirectoryListing(directory, entries)
                 callbackExecutor.execute {
                     directoryListingListener.onDirectoryList(directoryListing)
                 }
