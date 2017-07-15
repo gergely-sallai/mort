@@ -1,3 +1,4 @@
 rootProject.name = 'mort'
 include ':android'
+include 'core'
 
