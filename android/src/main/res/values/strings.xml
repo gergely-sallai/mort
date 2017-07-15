@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Mort - Movie Organizer Tool</string>
+    <string name="title_activity_config">Configure Connection</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_user">User</string>
+    <string name="prompt_host">Host</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
 </resources>
