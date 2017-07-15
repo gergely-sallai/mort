@@ -1,14 +1,15 @@
 package gergelysallai.mort.android.list;
 
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.ViewGroup;
+import gergelysallai.mort.android.connection.SftpState;
 import gergelysallai.mort.core.data.DirectoryListing;
 import gergelysallai.mort.core.data.RemoteDirectoryEntry;
-import gergelysallai.mort.core.ssh.DirectoryListingListener;
+import timber.log.Timber;
 
 
-class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> implements DirectoryListingListener {
+class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> implements DirectoryListingUpdateListener {
 
     private static final int TYPE_PARENT = 0;
     private static final int TYPE_DIRECTORY = 1;
@@ -72,8 +73,7 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
         return (hasParentItem ? 1 : 0);
     }
 
-    @Override
-    public void onDirectoryList(@NonNull DirectoryListing directoryListing) {
+    private void updateDirectoryListing(DirectoryListing directoryListing) {
         this.directoryListing = directoryListing;
         this.hasParentItem = directoryListing.parent != null;
         this.itemCount = directoryListing.entries.size() + parentOffset(hasParentItem);
@@ -81,12 +81,20 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
     }
 
     @Override
-    public void onDirectoryListError() {
-
-    }
-
-    @Override
-    public void onClosed() {
-
+    public void onDirectoryListingUpdate(Pair<SftpState, DirectoryListing> update) {
+        switch (update.first) {
+            case Ok:
+                Timber.d("Updated: %s", update.second);
+                if (update.second != null) {
+                    updateDirectoryListing(update.second);
+                }
+                break;
+            case Error:
+                Timber.e("Error!");
+                break;
+            case Closed:
+                Timber.w("Closed!");
+                break;
+        }
     }
 }

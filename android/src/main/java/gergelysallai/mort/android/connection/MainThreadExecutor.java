@@ -1,4 +1,4 @@
-package gergelysallai.mort.android;
+package gergelysallai.mort.android.connection;
 
 import android.os.Handler;
 import android.os.Looper;
