@@ -1,4 +1,4 @@
-package gergelysallai.mort.core.util;
+package gergelysallai.mort.util;
 
 public class Verify {
 
