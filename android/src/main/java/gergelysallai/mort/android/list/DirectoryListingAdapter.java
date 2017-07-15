@@ -4,9 +4,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.ViewGroup;
 import gergelysallai.mort.android.connection.SftpState;
+import gergelysallai.mort.android.list.comparator.FileNameComparator;
 import gergelysallai.mort.core.data.DirectoryListing;
 import gergelysallai.mort.core.data.RemoteDirectoryEntry;
 import timber.log.Timber;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> implements DirectoryListingUpdateListener {
@@ -15,9 +20,11 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
     private static final int TYPE_DIRECTORY = 1;
     private static final int TYPE_FILE = 2;
 
+    private final FileNameComparator fileNameComparator = new FileNameComparator();
+
     private final OnItemClickListener<RemoteDirectoryEntry> itemClickListener;
 
-    private DirectoryListing directoryListing;
+    private List<RemoteDirectoryEntry> entryList = Collections.emptyList();
 
     DirectoryListingAdapter(OnItemClickListener<RemoteDirectoryEntry> itemClickListener) {
         this.itemClickListener = itemClickListener;
@@ -39,17 +46,17 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
 
     @Override
     public void onBindViewHolder(ViewHolderBase holder, int position) {
-        holder.bind(directoryListing.entries.get(position));
+        holder.bind(entryList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return directoryListing.entries.size();
+        return entryList.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        RemoteDirectoryEntry entry = directoryListing.entries.get(position);
+        RemoteDirectoryEntry entry = entryList.get(position);
         if (isParent(entry)) {
             return TYPE_PARENT;
         }
@@ -64,7 +71,9 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
     }
 
     private void updateDirectoryListing(DirectoryListing directoryListing) {
-        this.directoryListing = directoryListing;
+        entryList = new ArrayList<>();
+        entryList.addAll(directoryListing.entries);
+        Collections.sort(entryList, fileNameComparator);
         notifyDataSetChanged();
     }
 
