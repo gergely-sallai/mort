@@ -1,5 +1,7 @@
 package gergelysallai.mort.android.config;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -103,7 +105,11 @@ public class ConfigActivity extends AppCompatActivity {
         }
         saveValues(host, user);
         startActivity(ItemListActivity.createIntent(host, user, password, this));
+        finish();
     }
 
+    public static Intent createIntent(Context context) {
+        return new Intent(context, ConfigActivity.class);
+    }
 }
 

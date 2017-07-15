@@ -12,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Pair;
 import android.view.View;
+import android.widget.Toast;
 import gergelysallai.mort.android.LifecycleAppCompatActivity;
 import gergelysallai.mort.android.R;
 import gergelysallai.mort.android.config.ConfigActivity;
@@ -56,57 +57,8 @@ public class ItemListActivity extends LifecycleAppCompatActivity {
             connectionManager.init(host);
             firstConnect = true;
         }
-        connectionManager.getConnectionStateData().observe(this, new Observer<ConnectionState>() {
-            @Override
-            public void onChanged(ConnectionState connectionState) {
-                switch (connectionState) {
-                    case Connected:
-                        Timber.d("Connected");
-                        connectionManager.createSftp();
-                        break;
-                    case AuthenticationError:
-                        Timber.e("AuthenticationError");
-                        break;
-                    case Disconnected:
-                        Timber.i("Disconnected");
-                        if (firstConnect) {
-                            connectionManager.connect(user, password);
-                            firstConnect = false;
-                        }
-                        break;
-                    case ConnectionError:
-                        Timber.e("ConnectionError");
-                        break;
-                }
-            }
-        });
-        connectionManager.getSftpStateData().observe(this, new Observer<Pair<SftpState, DirectoryListing>>() {
-            @Override
-            public void onChanged(Pair<SftpState, DirectoryListing> sftpPair) {
-                switch (sftpPair.first) {
-                    case Ok:
-                        if (sftpPair.second != null) {
-                            if (sftpPair.second.entries.size() > 0) {
-                                showRecyclerView();
-                            } else {
-                                showEmptyPane();
-                            }
-                            updateTitle(sftpPair.second.current.fileName);
-                            adapter.onDirectoryListingUpdate(sftpPair);
-                        } else {
-                            sftpHandler = connectionManager.getSftpHandler();
-                            sftpHandler.ls(new RemoteDirectoryEntry("/storage", true, false, false, 0L));
-                        }
-                        break;
-                    case Error:
-                        showErrorPane();
-                        break;
-                    case Closed:
-                        showClosedPane();
-                        break;
-                }
-            }
-        });
+        connectionManager.getConnectionStateData().observe(this, new ConnectionStateObserver());
+        connectionManager.getSftpStateData().observe(this, new SftpStateObserver());
 
     }
 
@@ -195,5 +147,75 @@ public class ItemListActivity extends LifecycleAppCompatActivity {
         intent.putExtra(ConfigActivity.USER_NAME_KEY, user);
         intent.putExtra(ConfigActivity.PASSWORD_KEY, password);
         return intent;
+    }
+
+    private class ConnectionStateObserver implements Observer<ConnectionState> {
+        @Override
+        public void onChanged(ConnectionState connectionState) {
+            switch (connectionState) {
+                case Connected:
+                    Timber.d("Connected");
+                    connectionManager.createSftp();
+                    break;
+                case AuthenticationError:
+                    Timber.e("AuthenticationError");
+                    handleAuthError();
+                    break;
+                case Disconnected:
+                    Timber.i("Disconnected");
+                    if (firstConnect) {
+                        connectionManager.connect(user, password);
+                        firstConnect = false;
+                    }
+                    break;
+                case ConnectionError:
+                    Timber.e("ConnectionError");
+                    handleConnectionError();
+                    break;
+            }
+        }
+
+        private void handleConnectionError() {
+            connectionManager.disconnect();
+            Toast.makeText(ItemListActivity.this, R.string.error_connection, Toast.LENGTH_LONG).show();
+            startActivity(ConfigActivity.createIntent(ItemListActivity.this));
+            finish();
+        }
+
+        private void handleAuthError() {
+            connectionManager.disconnect();
+            Toast.makeText(ItemListActivity.this, R.string.error_authentication, Toast.LENGTH_LONG).show();
+            startActivity(ConfigActivity.createIntent(ItemListActivity.this));
+            finish();
+        }
+    }
+
+    private class SftpStateObserver implements Observer<Pair<SftpState, DirectoryListing>> {
+
+        @Override
+        public void onChanged(Pair<SftpState, DirectoryListing> sftpPair) {
+            switch (sftpPair.first) {
+                case Ok:
+                    if (sftpPair.second != null) {
+                        if (sftpPair.second.entries.size() > 0) {
+                            showRecyclerView();
+                        } else {
+                            showEmptyPane();
+                        }
+                        updateTitle(sftpPair.second.current.fileName);
+                        adapter.onDirectoryListingUpdate(sftpPair);
+                    } else {
+                        sftpHandler = connectionManager.getSftpHandler();
+                        sftpHandler.ls(new RemoteDirectoryEntry("/storage", true, false, false, 0L));
+                    }
+                    break;
+                case Error:
+                    showErrorPane();
+                    break;
+                case Closed:
+                    showClosedPane();
+                    break;
+            }
+        }
     }
 }

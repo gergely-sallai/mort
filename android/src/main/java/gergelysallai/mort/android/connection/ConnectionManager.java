@@ -104,5 +104,6 @@ public class ConnectionManager extends ViewModel implements SshConnectionListene
         if (sshConnectionHandler != null) {
             sshConnectionHandler.disconnect();
         }
+        connectionExecutor.shutdown();
     }
 }

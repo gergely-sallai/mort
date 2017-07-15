@@ -7,10 +7,11 @@
     <string name="prompt_host">Host</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
 
     <!-- Strings related to list -->
+    <string name="error_authentication">Authentication error</string>
+    <string name="error_connection">Connection error</string>
     <string name="error_sftp">Error</string>
     <string name="empty_sftp">Empty Result</string>
     <string name="closed_sftp">Connection closed</string>
