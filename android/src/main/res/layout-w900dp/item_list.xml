@@ -18,16 +18,48 @@
 
     -->
 
-    <android.support.v7.widget.RecyclerView
+    <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/item_list"
-        android:name="gergelysallai.mort.android.ItemListFragment"
         android:layout_width="@dimen/item_width"
-        android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"
-        tools:context="gergelysallai.mort.android.list.ItemListActivity"
-        tools:listitem="@layout/item_list_content"/>
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/progress_pane"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"/>
+        <TextView
+            android:id="@+id/error_pane"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/error_sftp"
+            android:gravity="center"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/empty_pane"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/empty_sftp"
+            android:gravity="center"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/closed_pane"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/closed_sftp"
+            android:gravity="center"
+            android:visibility="gone"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/item_list"
+            android:name="gergelysallai.mort.android.ItemListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager"
+            tools:context="gergelysallai.mort.android.list.ItemListActivity"
+            tools:listitem="@layout/item_list_content"
+            android:visibility="gone"/>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/item_detail_container"

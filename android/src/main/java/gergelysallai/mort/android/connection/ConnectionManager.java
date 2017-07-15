@@ -94,4 +94,15 @@ public class ConnectionManager extends ViewModel implements SshConnectionListene
     public void onClosed() {
         sftpStateData.setValue(Pair.<SftpState, DirectoryListing>create(SftpState.Closed, null));
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        if (sftpHandler != null) {
+            sftpHandler.close();
+        }
+        if (sshConnectionHandler != null) {
+            sshConnectionHandler.disconnect();
+        }
+    }
 }
