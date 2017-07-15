@@ -6,12 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Pair;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import gergelysallai.mort.android.LifecycleAppCompatActivity;
 import gergelysallai.mort.android.R;
@@ -25,7 +28,7 @@ import gergelysallai.mort.core.ssh.SftpHandler;
 import timber.log.Timber;
 
 
-public class ItemListActivity extends LifecycleAppCompatActivity {
+public class ItemListActivity extends LifecycleAppCompatActivity implements OnItemClickListener<RemoteDirectoryEntry> {
 
     private ConnectionManager connectionManager;
     private SftpHandler sftpHandler;
@@ -36,9 +39,10 @@ public class ItemListActivity extends LifecycleAppCompatActivity {
     private String user;
     private String password;
 
-    private View errorPane;
+    private View messagePanel;
+    private TextView messagePanelLabel;
+
     private View emptyPane;
-    private View closedPane;
     private View progressPane;
     private RecyclerView recyclerView;
     private Toolbar toolbar;
@@ -64,11 +68,14 @@ public class ItemListActivity extends LifecycleAppCompatActivity {
 
     private void initViews() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        errorPane = findViewById(R.id.error_pane);
+        messagePanel = findViewById(R.id.message_panel);
+        messagePanelLabel = (TextView) findViewById(R.id.message_label);
+
         emptyPane = findViewById(R.id.empty_pane);
-        closedPane = findViewById(R.id.closed_pane);
         progressPane = findViewById(R.id.progress_pane);
         recyclerView = (RecyclerView) findViewById(R.id.item_list);
+
+        final Button messagePanelSignInButton = (Button) findViewById(R.id.relogin_button);
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         setSupportActionBar(toolbar);
@@ -77,6 +84,13 @@ public class ItemListActivity extends LifecycleAppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+        messagePanelSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(ConfigActivity.createIntent(ItemListActivity.this));
+                finish();
             }
         });
     }
@@ -88,50 +102,47 @@ public class ItemListActivity extends LifecycleAppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        adapter = new DirectoryListingAdapter(null);
+        adapter = new DirectoryListingAdapter(this);
         recyclerView.setAdapter(adapter);
     }
 
     private void showProgressPane() {
         recyclerView.setVisibility(View.GONE);
-        closedPane.setVisibility(View.GONE);
+        messagePanel.setVisibility(View.GONE);
         emptyPane.setVisibility(View.GONE);
-        errorPane.setVisibility(View.GONE);
 
         progressPane.setVisibility(View.VISIBLE);
     }
 
-    private void showErrorPane() {
+    private void showErrorPane(@StringRes int res) {
         recyclerView.setVisibility(View.GONE);
-        closedPane.setVisibility(View.GONE);
         emptyPane.setVisibility(View.GONE);
         progressPane.setVisibility(View.GONE);
 
-        errorPane.setVisibility(View.VISIBLE);
+        messagePanel.setVisibility(View.VISIBLE);
+        messagePanelLabel.setText(res);
     }
 
     private void showClosedPane() {
         recyclerView.setVisibility(View.GONE);
         emptyPane.setVisibility(View.GONE);
         progressPane.setVisibility(View.GONE);
-        errorPane.setVisibility(View.GONE);
 
-        closedPane.setVisibility(View.VISIBLE);
+        messagePanel.setVisibility(View.VISIBLE);
+        messagePanelLabel.setText(R.string.closed_sftp);
     }
 
     private void showEmptyPane() {
         recyclerView.setVisibility(View.GONE);
         progressPane.setVisibility(View.GONE);
-        errorPane.setVisibility(View.GONE);
-        closedPane.setVisibility(View.GONE);
+        messagePanel.setVisibility(View.GONE);
 
         emptyPane.setVisibility(View.VISIBLE);
     }
 
     private void showRecyclerView() {
         progressPane.setVisibility(View.GONE);
-        errorPane.setVisibility(View.GONE);
-        closedPane.setVisibility(View.GONE);
+        messagePanel.setVisibility(View.GONE);
         emptyPane.setVisibility(View.GONE);
 
         recyclerView.setVisibility(View.VISIBLE);
@@ -147,6 +158,11 @@ public class ItemListActivity extends LifecycleAppCompatActivity {
         intent.putExtra(ConfigActivity.USER_NAME_KEY, user);
         intent.putExtra(ConfigActivity.PASSWORD_KEY, password);
         return intent;
+    }
+
+    @Override
+    public void onItemClicked(RemoteDirectoryEntry item) {
+        Toast.makeText(this, item.fileName, Toast.LENGTH_SHORT).show();
     }
 
     private class ConnectionStateObserver implements Observer<ConnectionState> {
@@ -177,16 +193,12 @@ public class ItemListActivity extends LifecycleAppCompatActivity {
 
         private void handleConnectionError() {
             connectionManager.disconnect();
-            Toast.makeText(ItemListActivity.this, R.string.error_connection, Toast.LENGTH_LONG).show();
-            startActivity(ConfigActivity.createIntent(ItemListActivity.this));
-            finish();
+            showErrorPane(R.string.error_connection);
         }
 
         private void handleAuthError() {
             connectionManager.disconnect();
-            Toast.makeText(ItemListActivity.this, R.string.error_authentication, Toast.LENGTH_LONG).show();
-            startActivity(ConfigActivity.createIntent(ItemListActivity.this));
-            finish();
+            showErrorPane(R.string.error_authentication);
         }
     }
 
@@ -210,12 +222,17 @@ public class ItemListActivity extends LifecycleAppCompatActivity {
                     }
                     break;
                 case Error:
-                    showErrorPane();
+                    handleSftpError();
                     break;
                 case Closed:
                     showClosedPane();
                     break;
             }
+        }
+
+        private void handleSftpError() {
+            Snackbar.make(getWindow().getDecorView(), R.string.error_sftp, Snackbar.LENGTH_LONG)
+                    .setAction(android.R.string.ok, null).show();
         }
     }
 }
