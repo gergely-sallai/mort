@@ -1,6 +1,7 @@
 # Build
 /build
 /app/build
+/core/build
 
 # Gradle
 /.gradle

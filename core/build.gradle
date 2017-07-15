@@ -23,15 +23,14 @@ repositories {
 }
 
 dependencies {
-    compile 'com.jakewharton.timber:timber:4.5.1'
     compile 'org.connectbot:sshlib:2.2.5'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.7"
+    kotlinOptions.jvmTarget = "1.6"
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.7"
+    kotlinOptions.jvmTarget = "1.6"
 }

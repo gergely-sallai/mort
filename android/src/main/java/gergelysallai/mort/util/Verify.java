@@ -12,4 +12,15 @@ public class Verify {
         }
         return value;
     }
+
+    public static boolean verify(boolean expression) {
+        return verify(expression, null);
+    }
+
+    public static boolean verify(boolean expression, String message) {
+        if (!expression) {
+            throw new IllegalStateException(message);
+        }
+        return true;
+    }
 }
