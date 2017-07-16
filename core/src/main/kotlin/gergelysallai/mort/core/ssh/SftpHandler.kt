@@ -29,21 +29,24 @@ class SftpHandler(private val sftpClient: SFTPv3Client,
         return path1 + "/" + path2
     }
 
+    private fun lsSynchronous(directory: RemoteDirectoryEntry): DirectoryListing {
+        val directoryPath = concatPaths(directory.parentDir, directory.fileName)
+        val ls: Vector<SFTPv3DirectoryEntry> = sftpClient.ls(directoryPath) as Vector<SFTPv3DirectoryEntry> // Lib is shitty had to force it :(
+        val entries = ls.map {
+            val relPath = concatPaths(directoryPath, it.filename)
+            logger.debug("Getting canonical name for: {}", relPath)
+            val canonicalPath = sftpClient.canonicalPath(relPath)
+            logger.debug("Success for: {} :: {}", relPath, canonicalPath)
+            RemoteDirectoryEntry.fromSFTPv3DirectoryEntry(it, directoryPath, canonicalPath)
+        }
+        return DirectoryListing(directory, entries)
+    }
+
     fun lsHome() {
         sshExecutor.execute {
             try {
-                val fileName = "."
-                val path = ""
-                val current = stats(path, fileName)
-                val ls: Vector<SFTPv3DirectoryEntry> = sftpClient.ls(fileName) as Vector<SFTPv3DirectoryEntry> // Lib is shitty had to force it :(
-                val entries = ls.map {
-                    val relPath = concatPaths(path, it.filename)
-                    logger.info("Getting canonical name for: {}", relPath)
-                    val canonicalPath = sftpClient.canonicalPath(relPath)
-                    logger.info("Success for: {} :: {}", relPath, canonicalPath)
-                    RemoteDirectoryEntry.fromSFTPv3DirectoryEntry(it, path, canonicalPath)
-                }
-                val directoryListing = DirectoryListing(current, entries)
+                val current = stats("", ".")
+                val directoryListing = lsSynchronous(current)
                 callbackExecutor.execute {
                     directoryListingListener.onDirectoryList(directoryListing)
                 }
@@ -59,16 +62,7 @@ class SftpHandler(private val sftpClient: SFTPv3Client,
     fun ls(directory: RemoteDirectoryEntry) {
         sshExecutor.execute {
             try {
-//                val ls: Vector<SFTPv3DirectoryEntry> = sftpClient.ls(directory.fileName) as Vector<SFTPv3DirectoryEntry> // Lib is shitty had to force it :(
-//                val entries = ls.map { RemoteDirectoryEntry.fromSFTPv3DirectoryEntry(it, "e") }
-
-                val directoryPath = concatPaths(directory.parentDir, directory.fileName)
-                val ls: Vector<SFTPv3DirectoryEntry> = sftpClient.ls(directoryPath) as Vector<SFTPv3DirectoryEntry> // Lib is shitty had to force it :(
-                val entries = ls.map {
-                    val relPath = concatPaths(directoryPath, it.filename)
-                    RemoteDirectoryEntry.fromSFTPv3DirectoryEntry(it, directoryPath, sftpClient.canonicalPath(relPath))
-                }
-                val directoryListing = DirectoryListing(directory, entries)
+                val directoryListing = lsSynchronous(directory)
                 callbackExecutor.execute {
                     directoryListingListener.onDirectoryList(directoryListing)
                 }
