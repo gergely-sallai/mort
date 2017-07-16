@@ -15,7 +15,6 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import gergelysallai.mort.android.LifecycleAppCompatActivity;
 import gergelysallai.mort.android.R;
 import gergelysallai.mort.android.config.ConfigActivity;
@@ -162,7 +161,9 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
 
     @Override
     public void onItemClicked(RemoteDirectoryEntry item) {
-        Toast.makeText(this, item.fileName, Toast.LENGTH_SHORT).show();
+        showProgressPane();
+        Timber.i("Clicked: %s", item.canonicalName);
+        sftpHandler.ls(item);
     }
 
     private class ConnectionStateObserver implements Observer<ConnectionState> {
@@ -214,11 +215,13 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
                         } else {
                             showEmptyPane();
                         }
-                        updateTitle(sftpPair.second.current.fileName);
+                        Timber.w(sftpPair.second.current.fileName);
+                        Timber.e(sftpPair.second.current.canonicalName);
+                        updateTitle(sftpPair.second.current.canonicalName);
                         adapter.onDirectoryListingUpdate(sftpPair);
                     } else {
                         sftpHandler = connectionManager.getSftpHandler();
-                        sftpHandler.ls(new RemoteDirectoryEntry("/storage", true, false, false, 0L));
+                        sftpHandler.lsHome();
                     }
                     break;
                 case Error:
@@ -231,6 +234,7 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
         }
 
         private void handleSftpError() {
+            showRecyclerView();
             Snackbar.make(getWindow().getDecorView(), R.string.error_sftp, Snackbar.LENGTH_LONG)
                     .setAction(android.R.string.ok, null).show();
         }
