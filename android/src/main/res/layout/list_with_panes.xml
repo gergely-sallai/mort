@@ -9,9 +9,10 @@
 
     <ProgressBar
         android:id="@+id/progress_pane"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        style="?android:attr/progressBarStyleLarge"/>
     <LinearLayout
         android:id="@+id/message_panel"
         android:layout_width="match_parent"

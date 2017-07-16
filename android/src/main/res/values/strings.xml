@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Mort - Movie Organizer Tool</string>
     <string name="title_activity_config">Configure Connection</string>
+    <string name="title_activity_details">Details</string>
 
     <!-- Strings related to login -->
     <string name="prompt_user">User</string>
@@ -16,4 +17,17 @@
     <string name="error_sftp">Error</string>
     <string name="empty_sftp">Empty Result</string>
     <string name="closed_sftp">Connection closed</string>
+
+    <!-- Strings related to details -->
+    <string name="details_title">Title</string>
+    <string name="details_year">Year</string>
+    <string name="details_override">Edit</string>
+    <string name="details_reset">Reset</string>
+    <string name="details_file_name">File name</string>
+    <string name="details_file_parent">File location</string>
+    <string name="details_movie">Movie</string>
+    <string name="details_tv_show">TV Show</string>
+    <string name="details_use_parent_instead">Use folder name for search</string>
+    <string name="details_create_link">Create Link</string>
+
 </resources>

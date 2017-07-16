@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Pair;
 import android.view.View;
@@ -20,6 +19,8 @@ import gergelysallai.mort.android.R;
 import gergelysallai.mort.android.config.ConfigActivity;
 import gergelysallai.mort.android.connection.ConnectionManager;
 import gergelysallai.mort.android.connection.SftpState;
+import gergelysallai.mort.android.detail.DetailActivity;
+import gergelysallai.mort.android.detail.DetailFragment;
 import gergelysallai.mort.core.data.DirectoryListing;
 import gergelysallai.mort.core.data.RemoteDirectoryEntry;
 import gergelysallai.mort.core.ssh.ConnectionState;
@@ -33,6 +34,7 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
     private SftpHandler sftpHandler;
     private DirectoryListingAdapter adapter;
 
+    private boolean isTwoPane;
     private String host;
     private String user;
     private String password;
@@ -66,6 +68,7 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
     }
 
     private void initViews() {
+        isTwoPane = findViewById(R.id.item_detail_container) != null;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         messagePanel = findViewById(R.id.message_panel);
         messagePanelLabel = (TextView) findViewById(R.id.message_label);
@@ -75,16 +78,8 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
         recyclerView = (RecyclerView) findViewById(R.id.item_list);
 
         final Button messagePanelSignInButton = (Button) findViewById(R.id.relogin_button);
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         setSupportActionBar(toolbar);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         messagePanelSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,8 +160,19 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
             showProgressPane();
             sftpHandler.ls(item);
         } else {
-            Snackbar.make(recyclerView, item.canonicalName, Snackbar.LENGTH_LONG)
-                    .setAction(android.R.string.ok, null).show();
+            openDetails(item);
+        }
+    }
+
+    private void openDetails(RemoteDirectoryEntry item) {
+        if (isTwoPane) {
+            final DetailFragment fragment = DetailFragment.createInstance(item);
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.item_detail_container, fragment)
+                    .commit();
+        } else {
+            startActivityForResult(DetailActivity.createIntent(item, this), 0);
         }
     }
 
