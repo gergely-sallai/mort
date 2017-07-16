@@ -161,9 +161,14 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
 
     @Override
     public void onItemClicked(RemoteDirectoryEntry item) {
-        showProgressPane();
-        Timber.i("Clicked: %s", item.canonicalName);
-        sftpHandler.ls(item);
+        if (item.isDirectory) {
+            showProgressPane();
+            Timber.i("Clicked: %s", item.canonicalName);
+            sftpHandler.ls(item);
+        } else {
+            Snackbar.make(recyclerView, item.canonicalName, Snackbar.LENGTH_LONG)
+                    .setAction(android.R.string.ok, null).show();
+        }
     }
 
     private class ConnectionStateObserver implements Observer<ConnectionState> {
@@ -235,7 +240,7 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
 
         private void handleSftpError() {
             showRecyclerView();
-            Snackbar.make(getWindow().getDecorView(), R.string.error_sftp, Snackbar.LENGTH_LONG)
+            Snackbar.make(recyclerView, R.string.error_sftp, Snackbar.LENGTH_LONG)
                     .setAction(android.R.string.ok, null).show();
         }
     }
