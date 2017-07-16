@@ -32,8 +32,9 @@ public class ConnectionManager extends ViewModel implements SshConnectionListene
     private SftpHandler sftpHandler;
 
     public void init(@NonNull String host) {
+        assert sshConnectionHandler == null;
         sshConnectionHandler = new SshConnectionHandler(host, this, connectionExecutor, mainThreadExecutor);
-        connectionStateData.setValue(ConnectionState.Disconnected);
+        connectionStateData.setValue(ConnectionState.Initialized);
     }
 
     public void connect(@NonNull String user, @NonNull String password) {
@@ -48,9 +49,24 @@ public class ConnectionManager extends ViewModel implements SshConnectionListene
         sshConnectionHandler.disconnect();
     }
 
+    public void release() {
+        sshConnectionHandler = null;
+    }
+
+    public boolean isInitialized() {
+        return sshConnectionHandler != null;
+    }
+
     public void createSftp() {
         assert sshConnectionHandler != null;
+        if (sftpHandler != null) {
+            sftpHandler.close();
+        }
         sshConnectionHandler.createSftpHandler(this);
+    }
+
+    public boolean hasSftpHandler() {
+        return sftpHandler != null;
     }
 
     @NonNull

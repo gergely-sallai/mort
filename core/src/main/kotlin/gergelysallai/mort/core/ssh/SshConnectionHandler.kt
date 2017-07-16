@@ -56,6 +56,7 @@ class SshConnectionHandler(host: String,
 }
 
 enum class ConnectionState {
+    Initialized,
     Connected,
     AuthenticationError,
     Disconnected,

@@ -12,6 +12,7 @@
     <!-- Strings related to list -->
     <string name="error_authentication">Authentication error</string>
     <string name="error_connection">Connection error</string>
+    <string name="error_disconnected">Disconnected from server</string>
     <string name="error_sftp">Error</string>
     <string name="empty_sftp">Empty Result</string>
     <string name="closed_sftp">Connection closed</string>

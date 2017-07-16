@@ -31,7 +31,6 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
 
     private ConnectionManager connectionManager;
     private SftpHandler sftpHandler;
-    private boolean firstConnect;
     private DirectoryListingAdapter adapter;
 
     private String host;
@@ -56,9 +55,10 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
         setupRecyclerView(recyclerView);
 
         connectionManager = ViewModelProviders.of(this).get(ConnectionManager.class);
-        if (savedInstanceState == null) {
+        if (!connectionManager.isInitialized()) {
             connectionManager.init(host);
-            firstConnect = true;
+        } else if (connectionManager.hasSftpHandler()) {
+            sftpHandler = connectionManager.getSftpHandler();
         }
         connectionManager.getConnectionStateData().observe(this, new ConnectionStateObserver());
         connectionManager.getSftpStateData().observe(this, new SftpStateObserver());
@@ -174,9 +174,14 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
         @Override
         public void onChanged(ConnectionState connectionState) {
             switch (connectionState) {
+                case Initialized:
+                    connectionManager.connect(user, password);
+                    break;
                 case Connected:
                     Timber.d("Connected");
-                    connectionManager.createSftp();
+                    if (!connectionManager.hasSftpHandler()) {
+                        connectionManager.createSftp();
+                    }
                     break;
                 case AuthenticationError:
                     Timber.e("AuthenticationError");
@@ -184,16 +189,17 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
                     break;
                 case Disconnected:
                     Timber.i("Disconnected");
-                    if (firstConnect) {
-                        connectionManager.connect(user, password);
-                        firstConnect = false;
-                    }
+                    handleDisconnected();
                     break;
                 case ConnectionError:
                     Timber.e("ConnectionError");
                     handleConnectionError();
                     break;
             }
+        }
+
+        private void handleDisconnected() {
+            showErrorPane(R.string.error_disconnected);
         }
 
         private void handleConnectionError() {
