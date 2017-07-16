@@ -81,7 +81,6 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
     public void onDirectoryListingUpdate(Pair<SftpState, DirectoryListing> update) {
         switch (update.first) {
             case Ok:
-                Timber.d("Updated: %s", update.second);
                 if (update.second != null) {
                     updateDirectoryListing(update.second);
                 }

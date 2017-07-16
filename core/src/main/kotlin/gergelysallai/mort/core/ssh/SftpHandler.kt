@@ -9,12 +9,18 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executor
 
+private const val PARENT_FOLDER = ".."
+private const val THIS_FOLDER = "."
+private const val EMPTY_PATH = ""
+private const val PATH_SEPARATOR = "/"
 
 class SftpHandler(private val sftpClient: SFTPv3Client,
                   private val directoryListingListener: DirectoryListingListener,
                   private val sshExecutor: Executor,
                   private val callbackExecutor: Executor) {
     private val logger = LoggerFactory.getLogger("SftpHandler")
+
+    private lateinit var homeFolderAbsPath: String
 
     private fun stats(path: String, fileName: String): RemoteDirectoryEntry {
         val relativePath = concatPaths(path, fileName)
@@ -26,18 +32,20 @@ class SftpHandler(private val sftpClient: SFTPv3Client,
         if (path1.isNullOrEmpty()) {
             return path2
         }
-        return path1 + "/" + path2
+        return path1 + PATH_SEPARATOR + path2
     }
 
     private fun lsSynchronous(directory: RemoteDirectoryEntry): DirectoryListing {
         val directoryPath = concatPaths(directory.parentDir, directory.fileName)
-        val ls: Vector<SFTPv3DirectoryEntry> = sftpClient.ls(directoryPath) as Vector<SFTPv3DirectoryEntry> // Lib is shitty had to force it :(
+        val simplifiedPath = makeRelative(sftpClient.canonicalPath(directoryPath))
+        logger.debug("Simplified: {} to: {}", directoryPath, simplifiedPath)
+        val ls: Vector<SFTPv3DirectoryEntry> = sftpClient.ls(simplifiedPath) as Vector<SFTPv3DirectoryEntry> // Lib is shitty had to force it :(
         val entries = ls.map {
-            val relPath = concatPaths(directoryPath, it.filename)
+            val relPath = concatPaths(simplifiedPath, it.filename)
             logger.debug("Getting canonical name for: {}", relPath)
             val canonicalPath = sftpClient.canonicalPath(relPath)
             logger.debug("Success for: {} :: {}", relPath, canonicalPath)
-            RemoteDirectoryEntry.fromSFTPv3DirectoryEntry(it, directoryPath, canonicalPath)
+            RemoteDirectoryEntry.fromSFTPv3DirectoryEntry(it, simplifiedPath, canonicalPath)
         }
         return DirectoryListing(directory, entries)
     }
@@ -45,7 +53,8 @@ class SftpHandler(private val sftpClient: SFTPv3Client,
     fun lsHome() {
         sshExecutor.execute {
             try {
-                val current = stats("", ".")
+                val current = stats(EMPTY_PATH, THIS_FOLDER)
+                homeFolderAbsPath = current.canonicalName
                 val directoryListing = lsSynchronous(current)
                 callbackExecutor.execute {
                     directoryListingListener.onDirectoryList(directoryListing)
@@ -84,6 +93,21 @@ class SftpHandler(private val sftpClient: SFTPv3Client,
             callbackExecutor.execute {
                 directoryListingListener.onClosed()
             }
+        }
+    }
+
+    private fun makeRelative(canonicalPath: String): String {
+        if (canonicalPath == homeFolderAbsPath) {
+            return THIS_FOLDER
+        } else if (canonicalPath.startsWith(homeFolderAbsPath)) {
+            return canonicalPath.replaceFirst(homeFolderAbsPath + PATH_SEPARATOR, EMPTY_PATH)
+        } else {
+            val segmentNum = homeFolderAbsPath.split("(?!\\\\)/").size
+            val relativeUp = Array(segmentNum, { PARENT_FOLDER }).joinToString(separator = PATH_SEPARATOR)
+            if (canonicalPath == PATH_SEPARATOR) {
+                return relativeUp
+            }
+            return relativeUp + canonicalPath
         }
     }
 }

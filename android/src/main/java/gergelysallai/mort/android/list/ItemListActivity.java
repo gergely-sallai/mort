@@ -163,7 +163,6 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
     public void onItemClicked(RemoteDirectoryEntry item) {
         if (item.isDirectory) {
             showProgressPane();
-            Timber.i("Clicked: %s", item.canonicalName);
             sftpHandler.ls(item);
         } else {
             Snackbar.make(recyclerView, item.canonicalName, Snackbar.LENGTH_LONG)
