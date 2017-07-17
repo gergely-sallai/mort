@@ -206,7 +206,12 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
         public void onChanged(ConnectionState connectionState) {
             switch (connectionState) {
                 case Initialized:
+                    Timber.d("Initialized");
                     connectionManager.connect(user, password);
+                    break;
+                case Authenticating:
+                    Timber.d("Authenticating");
+                    showProgressPane();
                     break;
                 case Connected:
                     Timber.d("Connected");
