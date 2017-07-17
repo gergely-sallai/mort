@@ -102,7 +102,7 @@ class SftpHandler(private val sftpClient: SFTPv3Client,
         } else if (canonicalPath.startsWith(homeFolderAbsPath)) {
             return canonicalPath.replaceFirst(homeFolderAbsPath + PATH_SEPARATOR, EMPTY_PATH)
         } else {
-            val segmentNum = homeFolderAbsPath.split("(?!\\\\)/").size
+            val segmentNum = homeFolderAbsPath.split("/").dropWhile { it.isEmpty() }.size
             val relativeUp = Array(segmentNum, { PARENT_FOLDER }).joinToString(separator = PATH_SEPARATOR)
             if (canonicalPath == PATH_SEPARATOR) {
                 return relativeUp
