@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,7 +100,8 @@ public class DetailFragment extends Fragment {
         createLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                publishResult();
+                clearErrors();
+                verifyValuesThenPublish();
             }
         });
 
@@ -109,6 +111,7 @@ public class DetailFragment extends Fragment {
 
         if (!editToggle.isChecked()) {
             resetToOriginal();
+            fab.requestFocus();
         }
         fileNameView.setText(fileName);
         fileLocationView.setText(parentDir);
@@ -117,7 +120,14 @@ public class DetailFragment extends Fragment {
         return view;
     }
 
-    private void publishResult() {
+    private void clearErrors() {
+        titleWrapper.setError(null);
+        yearWrapper.setError(null);
+        fileNameWrapper.setError(null);
+        fileLocationWrapper.setError(null);
+    }
+
+    private void verifyValuesThenPublish() {
         final boolean isMovie;
         switch (typeRadioGroup.getCheckedRadioButtonId()) {
             case R.id.radio_movie:
@@ -129,8 +139,19 @@ public class DetailFragment extends Fragment {
             default:
                 throw new IllegalStateException("Unknown radio button checked..");
         }
-        final int year = Integer.parseInt(yearView.getText().toString());
+
         final String title = titleView.getText().toString();
+        if (TextUtils.isEmpty(title)) {
+            titleWrapper.setError(getString(R.string.details_error_title_empty));
+            return;
+        }
+        final int year;
+        try {
+            year = Integer.parseInt(yearView.getText().toString());
+        } catch (NumberFormatException e) {
+            yearWrapper.setError(getString(R.string.details_error_number_required));
+            return;
+        }
         resultListener.onResult(directoryEntry, title, year, isMovie);
     }
 

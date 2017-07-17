@@ -1,5 +1,6 @@
 package gergelysallai.mort.android.list;
 
+import android.app.Fragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -33,10 +34,12 @@ import static gergelysallai.mort.android.detail.DetailActivity.ISMOVIE_KEY;
 import static gergelysallai.mort.android.detail.DetailActivity.TITLE_KEY;
 import static gergelysallai.mort.android.detail.DetailActivity.YEAR_KEY;
 import static gergelysallai.mort.android.detail.DetailFragment.DIRECTORY_ENTRY_KEY;
+import static gergelysallai.mort.util.Verify.verifyNotNull;
 
 
 public class ItemListActivity extends LifecycleAppCompatActivity implements OnItemClickListener<RemoteDirectoryEntry>, Detail.ResultListener {
 
+    private static final String FRAGMENT_TAG = "mort.android.DetailsFragmentTag";
     private static final int RESULT_REQUEST_CODE = 1337;
 
     private ConnectionManager connectionManager;
@@ -99,6 +102,11 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
 
     @Override
     public void onResult(@NonNull RemoteDirectoryEntry file, @NonNull String title, int year, boolean isMovie) {
+        if (isTwoPane) {
+            final Fragment fragment = getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+            verifyNotNull(fragment, "Fragment must not be null");
+            getFragmentManager().beginTransaction().remove(fragment).commit();
+        }
         // TODO
     }
 
@@ -186,7 +194,8 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
             final DetailFragment fragment = DetailFragment.createInstance(item);
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.item_detail_container, fragment)
+                    .replace(R.id.item_detail_container, fragment, FRAGMENT_TAG)
+                    .addToBackStack(FRAGMENT_TAG)
                     .commit();
         } else {
             startActivityForResult(DetailActivity.createIntent(item, this), RESULT_REQUEST_CODE);

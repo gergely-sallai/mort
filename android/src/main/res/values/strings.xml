@@ -29,5 +29,7 @@
     <string name="details_tv_show">TV Show</string>
     <string name="details_use_parent_instead">Use folder name for search</string>
     <string name="details_create_link">Create Link</string>
+    <string name="details_error_number_required">Invalid number</string>
+    <string name="details_error_title_empty">Title is required</string>
 
 </resources>

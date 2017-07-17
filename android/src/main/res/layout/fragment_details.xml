@@ -10,14 +10,14 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:paddingTop="16dp">
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/title_wrapper"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent">
@@ -34,12 +34,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/year_wrapper"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
             app:layout_constraintTop_toBottomOf="@+id/title_wrapper"
-            android:layout_marginStart="0dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/override_toggle"
-            android:layout_marginEnd="8dp">
+            app:layout_constraintRight_toLeftOf="@+id/override_toggle">
 
             <EditText
                 android:id="@+id/year_view"
@@ -56,6 +55,9 @@
             android:textOff="@string/details_override"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="@+id/year_wrapper"/>
 
@@ -65,7 +67,9 @@
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             app:layout_constraintTop_toBottomOf="@+id/year_wrapper"
             android:orientation="horizontal">
 
@@ -91,6 +95,8 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginTop="32dp"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             app:layout_constraintTop_toBottomOf="@+id/type_radio_group">
 
             <EditText
@@ -105,7 +111,9 @@
             android:id="@+id/file_location_wrapper"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             app:layout_constraintTop_toBottomOf="@+id/file_name_wrapper"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent">
@@ -124,7 +132,9 @@
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             app:layout_constraintTop_toBottomOf="@+id/file_location_wrapper"
             android:text="@string/details_use_parent_instead"/>
 
@@ -133,7 +143,9 @@
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:id="@+id/create_link"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             app:layout_constraintTop_toBottomOf="@+id/use_parent_instead_checkbox"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"/>
@@ -148,7 +160,7 @@
             android:layout_gravity="bottom|end"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_margin="@dimen/fab_margin"
             android:tint="@android:color/background_light"/>
 
 
