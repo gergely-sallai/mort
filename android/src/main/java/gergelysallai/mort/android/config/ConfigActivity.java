@@ -59,7 +59,7 @@ public class ConfigActivity extends AppCompatActivity {
         });
         loadValues();
 
-        Button proceedButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button proceedButton = (Button) findViewById(R.id.sign_in_button);
         proceedButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,8 +71,16 @@ public class ConfigActivity extends AppCompatActivity {
 
     private void loadValues() {
         final SharedPreferences preferences = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
-        hostView.setText(preferences.getString(HOST_NAME_KEY, null));
-        userView.setText(preferences.getString(USER_NAME_KEY, null));
+        final String hostName = preferences.getString(HOST_NAME_KEY, null);
+        final String userName = preferences.getString(USER_NAME_KEY, null);
+        if (!TextUtils.isEmpty(hostName)) {
+            hostView.setText(hostName);
+            userView.requestFocus();
+            if (!TextUtils.isEmpty(userName)) {
+                userView.setText(userName);
+                passwordView.requestFocus();
+            }
+        }
     }
 
     private void saveValues(String host, String userName) {
