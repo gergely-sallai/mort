@@ -19,6 +19,7 @@ import gergelysallai.mort.android.R;
 import gergelysallai.mort.android.config.ConfigActivity;
 import gergelysallai.mort.android.connection.ConnectionManager;
 import gergelysallai.mort.android.connection.SftpState;
+import gergelysallai.mort.android.detail.Detail;
 import gergelysallai.mort.android.detail.DetailActivity;
 import gergelysallai.mort.android.detail.DetailFragment;
 import gergelysallai.mort.core.data.DirectoryListing;
@@ -28,7 +29,15 @@ import gergelysallai.mort.core.ssh.SftpHandler;
 import timber.log.Timber;
 
 
-public class ItemListActivity extends LifecycleAppCompatActivity implements OnItemClickListener<RemoteDirectoryEntry> {
+import static gergelysallai.mort.android.detail.DetailActivity.ISMOVIE_KEY;
+import static gergelysallai.mort.android.detail.DetailActivity.TITLE_KEY;
+import static gergelysallai.mort.android.detail.DetailActivity.YEAR_KEY;
+import static gergelysallai.mort.android.detail.DetailFragment.DIRECTORY_ENTRY_KEY;
+
+
+public class ItemListActivity extends LifecycleAppCompatActivity implements OnItemClickListener<RemoteDirectoryEntry>, Detail.ResultListener {
+
+    private static final int RESULT_REQUEST_CODE = 1337;
 
     private ConnectionManager connectionManager;
     private SftpHandler sftpHandler;
@@ -64,7 +73,33 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
         }
         connectionManager.getConnectionStateData().observe(this, new ConnectionStateObserver());
         connectionManager.getSftpStateData().observe(this, new SftpStateObserver());
+    }
 
+    @Override
+    public void onItemClicked(RemoteDirectoryEntry item) {
+        if (item.isDirectory) {
+            showProgressPane();
+            sftpHandler.ls(item);
+        } else {
+            openDetails(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESULT_REQUEST_CODE && resultCode == RESULT_OK) {
+            final RemoteDirectoryEntry file = (RemoteDirectoryEntry) data.getSerializableExtra(DIRECTORY_ENTRY_KEY);
+            final String title = data.getStringExtra(TITLE_KEY);
+            final int year = data.getIntExtra(YEAR_KEY, 0);
+            final boolean isMovie = data.getBooleanExtra(ISMOVIE_KEY, false);
+            onResult(file, title, year, isMovie);
+        }
+    }
+
+    @Override
+    public void onResult(@NonNull RemoteDirectoryEntry file, @NonNull String title, int year, boolean isMovie) {
+        // TODO
     }
 
     private void initViews() {
@@ -146,24 +181,6 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
         toolbar.setSubtitle(title);
     }
 
-    public static Intent createIntent(@NonNull String host, @NonNull String user, @NonNull String password, Context context) {
-        final Intent intent = new Intent(context, ItemListActivity.class);
-        intent.putExtra(ConfigActivity.HOST_NAME_KEY, host);
-        intent.putExtra(ConfigActivity.USER_NAME_KEY, user);
-        intent.putExtra(ConfigActivity.PASSWORD_KEY, password);
-        return intent;
-    }
-
-    @Override
-    public void onItemClicked(RemoteDirectoryEntry item) {
-        if (item.isDirectory) {
-            showProgressPane();
-            sftpHandler.ls(item);
-        } else {
-            openDetails(item);
-        }
-    }
-
     private void openDetails(RemoteDirectoryEntry item) {
         if (isTwoPane) {
             final DetailFragment fragment = DetailFragment.createInstance(item);
@@ -172,8 +189,16 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
                     .replace(R.id.item_detail_container, fragment)
                     .commit();
         } else {
-            startActivityForResult(DetailActivity.createIntent(item, this), 0);
+            startActivityForResult(DetailActivity.createIntent(item, this), RESULT_REQUEST_CODE);
         }
+    }
+
+    public static Intent createIntent(@NonNull String host, @NonNull String user, @NonNull String password, Context context) {
+        final Intent intent = new Intent(context, ItemListActivity.class);
+        intent.putExtra(ConfigActivity.HOST_NAME_KEY, host);
+        intent.putExtra(ConfigActivity.USER_NAME_KEY, user);
+        intent.putExtra(ConfigActivity.PASSWORD_KEY, password);
+        return intent;
     }
 
     private class ConnectionStateObserver implements Observer<ConnectionState> {
