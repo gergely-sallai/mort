@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -91,6 +92,7 @@ public class DetailFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
                     resetToOriginal();
+                    clearErrors();
                 }
                 titleView.setEnabled(isChecked);
                 yearView.setEnabled(isChecked);
@@ -109,15 +111,20 @@ public class DetailFragment extends Fragment {
         final String parentDir = directoryEntry.parentDir;
         originalTitle = fileName;
 
-        if (!editToggle.isChecked()) {
-            resetToOriginal();
-            fab.requestFocus();
-        }
         fileNameView.setText(fileName);
         fileLocationView.setText(parentDir);
         titleUpdateListener.onUpdateTitle(fileName, parentDir);
 
         return view;
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (!editToggle.isChecked()) {
+            resetToOriginal();
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        }
     }
 
     private void clearErrors() {

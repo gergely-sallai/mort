@@ -30,7 +30,8 @@
             android:name=".detail.DetailActivity"
             android:label="@string/title_activity_details"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".list.ItemListActivity"/>
+            android:parentActivityName=".list.ItemListActivity"
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>
