@@ -37,20 +37,20 @@ public class ConfigActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setSubtitle(R.string.title_activity_config);
 
-        hostViewHolder = (TextInputLayout) findViewById(R.id.host_layout);
-        userViewholder = (TextInputLayout) findViewById(R.id.user_layout);
-        passwordViewHolder = (TextInputLayout) findViewById(R.id.password_layout);
-        hostView = (TextInputEditText) findViewById(R.id.host);
-        userView = (TextInputEditText) findViewById(R.id.user);
-        passwordView = (TextInputEditText) findViewById(R.id.password);
+        hostViewHolder = findViewById(R.id.host_layout);
+        userViewholder = findViewById(R.id.user_layout);
+        passwordViewHolder = findViewById(R.id.password_layout);
+        hostView = findViewById(R.id.host);
+        userView = findViewById(R.id.user);
+        passwordView = findViewById(R.id.password);
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                if (id == EditorInfo.IME_ACTION_GO || id == EditorInfo.IME_NULL) {
                     attemptLogin();
                     return true;
                 }
@@ -59,7 +59,7 @@ public class ConfigActivity extends AppCompatActivity {
         });
         loadValues();
 
-        Button proceedButton = (Button) findViewById(R.id.sign_in_button);
+        Button proceedButton = findViewById(R.id.sign_in_button);
         proceedButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
