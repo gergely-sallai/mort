@@ -112,15 +112,15 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
 
     private void initViews() {
         isTwoPane = findViewById(R.id.item_detail_container) != null;
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         messagePanel = findViewById(R.id.message_panel);
-        messagePanelLabel = (TextView) findViewById(R.id.message_label);
+        messagePanelLabel = findViewById(R.id.message_label);
 
         emptyPane = findViewById(R.id.empty_pane);
         progressPane = findViewById(R.id.progress_pane);
-        recyclerView = (RecyclerView) findViewById(R.id.item_list);
+        recyclerView = findViewById(R.id.item_list);
 
-        final Button messagePanelSignInButton = (Button) findViewById(R.id.relogin_button);
+        final Button messagePanelSignInButton = findViewById(R.id.relogin_button);
 
         setSupportActionBar(toolbar);
         messagePanelSignInButton.setOnClickListener(new View.OnClickListener() {

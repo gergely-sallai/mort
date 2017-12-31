@@ -73,19 +73,19 @@ public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_details, container, false);
-        titleWrapper = (TextInputLayout) view.findViewById(R.id.title_wrapper);
-        titleView = (EditText) view.findViewById(R.id.title_view);
-        yearWrapper = (TextInputLayout) view.findViewById(R.id.year_wrapper);
-        yearView = (EditText) view.findViewById(R.id.year_view);
-        editToggle = (ToggleButton) view.findViewById(R.id.override_toggle);
-        typeRadioGroup = (RadioGroup) view.findViewById(R.id.type_radio_group);
-        fileNameWrapper = (TextInputLayout) view.findViewById(R.id.file_name_wrapper);
-        fileNameView = (EditText) view.findViewById(R.id.file_name_view);
-        fileLocationWrapper = (TextInputLayout) view.findViewById(R.id.file_location_wrapper);
-        fileLocationView = (EditText) view.findViewById(R.id.file_location_view);
-        useParentInstead = (CheckBox) view.findViewById(R.id.use_parent_instead_checkbox);
-        createLink = (Button) view.findViewById(R.id.create_link);
-        fab = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
+        titleWrapper = view.findViewById(R.id.title_wrapper);
+        titleView = view.findViewById(R.id.title_view);
+        yearWrapper = view.findViewById(R.id.year_wrapper);
+        yearView = view.findViewById(R.id.year_view);
+        editToggle = view.findViewById(R.id.override_toggle);
+        typeRadioGroup = view.findViewById(R.id.type_radio_group);
+        fileNameWrapper = view.findViewById(R.id.file_name_wrapper);
+        fileNameView = view.findViewById(R.id.file_name_view);
+        fileLocationWrapper = view.findViewById(R.id.file_location_wrapper);
+        fileLocationView = view.findViewById(R.id.file_location_view);
+        useParentInstead = view.findViewById(R.id.use_parent_instead_checkbox);
+        createLink = view.findViewById(R.id.create_link);
+        fab = view.findViewById(R.id.floatingActionButton);
 
         editToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

@@ -34,7 +34,7 @@ public class DetailActivity extends LifecycleAppCompatActivity implements Detail
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
 
         final RemoteDirectoryEntry directoryEntry = (RemoteDirectoryEntry) getIntent().getSerializableExtra(DIRECTORY_ENTRY_KEY);
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
