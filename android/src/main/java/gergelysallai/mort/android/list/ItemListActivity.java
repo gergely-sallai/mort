@@ -15,6 +15,7 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import gergelysallai.mort.android.LifecycleAppCompatActivity;
 import gergelysallai.mort.android.R;
 import gergelysallai.mort.android.config.ConfigActivity;
@@ -27,8 +28,14 @@ import gergelysallai.mort.core.data.DirectoryListing;
 import gergelysallai.mort.core.data.RemoteDirectoryEntry;
 import gergelysallai.mort.core.ssh.ConnectionState;
 import gergelysallai.mort.core.ssh.SftpHandler;
+import gergelysallai.mort.core.ssh.TaskCompletionListener;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import timber.log.Timber;
 
+
+import java.util.Locale;
 
 import static gergelysallai.mort.android.detail.DetailActivity.ISMOVIE_KEY;
 import static gergelysallai.mort.android.detail.DetailActivity.TITLE_KEY;
@@ -39,8 +46,12 @@ import static gergelysallai.mort.util.Verify.verifyNotNull;
 
 public class ItemListActivity extends LifecycleAppCompatActivity implements OnItemClickListener<RemoteDirectoryEntry>, Detail.ResultListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(ItemListActivity.class);
+
     private static final String FRAGMENT_TAG = "mort.android.DetailsFragmentTag";
     private static final int RESULT_REQUEST_CODE = 1337;
+    private static final String MOVIES_FOLDER = "videos/movies";
+    private static final String TVSHOWS_FOLDER = "videos/tvshows";
 
     private ConnectionManager connectionManager;
     private SftpHandler sftpHandler;
@@ -107,7 +118,22 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
             verifyNotNull(fragment, "Fragment must not be null");
             getFragmentManager().beginTransaction().remove(fragment).commit();
         }
-        // TODO
+
+        final String containerDir = isMovie ? MOVIES_FOLDER : TVSHOWS_FOLDER;
+        final String dirName = String.format(Locale.ENGLISH, "%s/%s (%d)", containerDir, title, year);
+
+        logger.debug("Creating link for: {} in: {}", file.canonicalName, dirName);
+        sftpHandler.createHardLinkAndFolder(file.canonicalName, dirName, new TaskCompletionListener() {
+            @Override
+            public void onTaskCompleted() {
+                Toast.makeText(ItemListActivity.this, "link created", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onTaskFailed(@Nullable String message) {
+                Toast.makeText(ItemListActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void initViews() {
