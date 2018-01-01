@@ -37,6 +37,16 @@ class SshConnectionHandler(host: String,
                     SupportedAuthMethods.password -> {
                         authSuccessful = sshConnection.authenticateWithPassword(user, password)
                     }
+                    SupportedAuthMethods.keyboardInteractive -> {
+                        authSuccessful = sshConnection.authenticateWithKeyboardInteractive(user, { name, instruction, numPrompts, prompt, echo ->
+                            logger.warn("Interactive: name: {}, instructions: {}, numPrompts: {}, prompt: {}, echo: {}", name, instruction, numPrompts, prompt, echo)
+                            if (prompt != null && !prompt.isEmpty() && prompt.first() == "Password:") {
+                                arrayOf(password)
+                            } else {
+                                arrayOf<String>()
+                            }
+                         })
+                    }
                 }
                 callbackExecutor.execute {
                     if (authSuccessful) {
@@ -92,7 +102,8 @@ class SshConnectionHandler(host: String,
 }
 
 private enum class SupportedAuthMethods(val authMethodName: kotlin.String) {
-    password("password");
+    password("password"),
+    keyboardInteractive("keyboard-interactive");
     companion object {
         fun forName(name: String): SupportedAuthMethods? {
             return values().find { it.authMethodName == name }
