@@ -21,6 +21,8 @@
         <xliff:g id="file_size" example="157 MB">%1$s</xliff:g>
     </string>
     <string name="file_size_unknown">Unknown</string>
+    <string name="copy_file_name">Copy file name</string>
+    <string name="copy_file_path">Copy name with path</string>
 
     <!-- Strings related to details -->
     <string name="details_title">Title</string>
