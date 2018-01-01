@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="gergelysallai.mort.android.config.ConfigActivity">
+    tools:context="gergelysallai.mort.android.login.LoginActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

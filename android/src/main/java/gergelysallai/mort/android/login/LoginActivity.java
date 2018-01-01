@@ -1,4 +1,4 @@
-package gergelysallai.mort.android.config;
+package gergelysallai.mort.android.login;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +20,7 @@ import android.widget.TextView;
 import gergelysallai.mort.android.R;
 import gergelysallai.mort.android.list.ItemListActivity;
 
-public class ConfigActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     private static final String SHARED_PREF_NAME = "PreviousSessionData";
     public static final String HOST_NAME_KEY = "mort.android.HostNameKey";
     public static final String USER_NAME_KEY = "mort.android.UserNameKey";
@@ -36,10 +36,10 @@ public class ConfigActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_config);
+        setContentView(R.layout.activity_login);
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setSubtitle(R.string.title_activity_config);
+        toolbar.setSubtitle(R.string.title_activity_login);
 
         hostViewHolder = findViewById(R.id.host_layout);
         userViewholder = findViewById(R.id.user_layout);
@@ -117,7 +117,7 @@ public class ConfigActivity extends AppCompatActivity {
     }
 
     public static Intent createIntent(Context context) {
-        return new Intent(context, ConfigActivity.class);
+        return new Intent(context, LoginActivity.class);
     }
 }
 

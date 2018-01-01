@@ -19,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import gergelysallai.mort.android.LifecycleAppCompatActivity;
 import gergelysallai.mort.android.R;
-import gergelysallai.mort.android.config.ConfigActivity;
+import gergelysallai.mort.android.login.LoginActivity;
 import gergelysallai.mort.android.connection.ConnectionManager;
 import gergelysallai.mort.android.connection.SftpState;
 import gergelysallai.mort.android.detail.Detail;
@@ -152,16 +152,16 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
         messagePanelSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(ConfigActivity.createIntent(ItemListActivity.this));
+                startActivity(LoginActivity.createIntent(ItemListActivity.this));
                 finish();
             }
         });
     }
 
     private void loadValuesFromIntent(Intent intent) {
-        host = intent.getStringExtra(ConfigActivity.HOST_NAME_KEY);
-        user = intent.getStringExtra(ConfigActivity.USER_NAME_KEY);
-        password = intent.getStringExtra(ConfigActivity.PASSWORD_KEY);
+        host = intent.getStringExtra(LoginActivity.HOST_NAME_KEY);
+        user = intent.getStringExtra(LoginActivity.USER_NAME_KEY);
+        password = intent.getStringExtra(LoginActivity.PASSWORD_KEY);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -230,9 +230,9 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
 
     public static Intent createIntent(@NonNull String host, @NonNull String user, @NonNull String password, Context context) {
         final Intent intent = new Intent(context, ItemListActivity.class);
-        intent.putExtra(ConfigActivity.HOST_NAME_KEY, host);
-        intent.putExtra(ConfigActivity.USER_NAME_KEY, user);
-        intent.putExtra(ConfigActivity.PASSWORD_KEY, password);
+        intent.putExtra(LoginActivity.HOST_NAME_KEY, host);
+        intent.putExtra(LoginActivity.USER_NAME_KEY, user);
+        intent.putExtra(LoginActivity.PASSWORD_KEY, password);
         return intent;
     }
 
