@@ -66,7 +66,7 @@ class SshConnectionHandler(host: String,
         sshExecutor.execute {
             try {
                 val sftpClient = SFTPv3Client(sshConnection)
-                val sftpHandler = SftpHandler(sftpClient, directoryListingListener, sshExecutor, callbackExecutor)
+                val sftpHandler = SftpHandler(sshConnection, sftpClient, directoryListingListener, sshExecutor, callbackExecutor)
                 callbackExecutor.execute {
                     connectionListener.onSftpHandlerCreated(sftpHandler)
                 }

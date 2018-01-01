@@ -17,7 +17,7 @@ private const val EMPTY_PATH = ""
 private const val PATH_SEPARATOR = "/"
 private const val PERMISSION_0755 = 493 // in decimal
 
-class SftpHandler(private val sshconnection: Connection,
+class SftpHandler(private val sshConnection: Connection,
                   private val sftpClient: SFTPv3Client,
                   private val directoryListingListener: DirectoryListingListener,
                   private val sshExecutor: Executor,
@@ -113,7 +113,7 @@ class SftpHandler(private val sshconnection: Connection,
             }
             var session: Session? = null
             try {
-                session = sshconnection.openSession()
+                session = sshConnection.openSession()
                 val command = "ln '$fileName' '$destination'"
                 val stdErr = session.stderr
                 stdErr.skip(stdErr.available().toLong()) // Skip over (possible) previous contents.
