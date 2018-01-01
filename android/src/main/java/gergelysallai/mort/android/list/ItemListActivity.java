@@ -296,8 +296,8 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
                         } else {
                             showEmptyPane();
                         }
-                        Timber.w(sftpPair.second.current.fileName);
-                        Timber.e(sftpPair.second.current.canonicalName);
+                        Timber.d(sftpPair.second.current.fileName);
+                        Timber.d(sftpPair.second.current.canonicalName);
                         updateTitle(sftpPair.second.current.canonicalName);
                         adapter.onDirectoryListingUpdate(sftpPair);
                     } else {
