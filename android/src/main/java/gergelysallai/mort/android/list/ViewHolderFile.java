@@ -1,5 +1,6 @@
 package gergelysallai.mort.android.list;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,16 +17,17 @@ class ViewHolderFile extends ViewHolderBase {
     ViewHolderFile(ViewGroup parent, OnItemClickListener<RemoteDirectoryEntry> clickListener) {
         super(parent, clickListener);
         fileDrawable = loadDrawable(R.drawable.ic_file_black_48dp);
-        fileName = (TextView) itemView.findViewById(R.id.filename);
-        details = (TextView) itemView.findViewById(R.id.details);
-        imageView = (ImageView) itemView.findViewById(R.id.image);
+        fileName = itemView.findViewById(R.id.filename);
+        details = itemView.findViewById(R.id.details);
+        imageView = itemView.findViewById(R.id.image);
     }
 
     @Override
     void bind(RemoteDirectoryEntry data) {
         super.bind(data);
+        final Resources resources = itemView.getResources();
         fileName.setText(data.fileName);
         imageView.setImageDrawable(fileDrawable);
-        details.setText("Size: " + data.fileSize);
+        details.setText(resources.getString(R.string.list_item_file_size, toHumanFileSize(data.fileSize)));
     }
 }

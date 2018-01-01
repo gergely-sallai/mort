@@ -6,6 +6,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,16 @@ abstract class ViewHolderBase extends RecyclerView.ViewHolder implements View.On
         final Drawable drawable = itemView.getResources().getDrawable(drawableRes, theme);
         drawable.setTint(getColor(itemView.getResources(), R.color.colorPrimary, theme));
         return drawable;
+    }
+
+    protected String toHumanFileSize(@Nullable Long fileSize) {
+        final String humanFileSize;
+        if (fileSize != null) {
+            humanFileSize = Formatter.formatShortFileSize(itemView.getContext(), fileSize);
+        } else {
+            humanFileSize = itemView.getResources().getString(R.string.file_size_unknown);
+        }
+        return humanFileSize;
     }
 
     private static View inflateView(@LayoutRes int layoutResId, ViewGroup parent) {

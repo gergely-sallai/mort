@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Mort - Movie Organizer Tool</string>
     <string name="title_activity_config">Configure Connection</string>
     <string name="title_activity_details">Details</string>
@@ -17,6 +17,10 @@
     <string name="error_sftp">Error</string>
     <string name="empty_sftp">Empty Result</string>
     <string name="closed_sftp">Connection closed</string>
+    <string name="list_item_file_size">Size:
+        <xliff:g id="file_size" example="157 MB">%1$s</xliff:g>
+    </string>
+    <string name="file_size_unknown">Unknown</string>
 
     <!-- Strings related to details -->
     <string name="details_title">Title</string>
