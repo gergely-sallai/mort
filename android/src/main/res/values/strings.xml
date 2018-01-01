@@ -2,6 +2,7 @@
     <string name="app_name">Mort - Movie Organizer Tool</string>
     <string name="title_activity_login">Configure Connection</string>
     <string name="title_activity_details">Details</string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to login -->
     <string name="prompt_user">User</string>
@@ -23,6 +24,11 @@
     <string name="file_size_unknown">Unknown</string>
     <string name="copy_file_name">Copy file name</string>
     <string name="copy_file_path">Copy name with path</string>
+    <string name="settings">Settings</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="bookmark">Bookmark
+        <xliff:g id="number" example="3">%1$d</xliff:g>
+    </string>
 
     <!-- Strings related to details -->
     <string name="details_title">Title</string>
@@ -37,5 +43,11 @@
     <string name="details_create_link">Create Link</string>
     <string name="details_error_number_required">Invalid number</string>
     <string name="details_error_title_empty">Title is required</string>
+
+    <!-- Strings related to settings -->
+    <string name="prompt_movies">Movies path</string>
+    <string name="prompt_tvshows">TvShows path</string>
+    <string name="prompt_favorite">Quick access path</string>
+    <string name="settings_error_field_required">This field is required</string>
 
 </resources>

@@ -7,6 +7,7 @@ import com.trilead.ssh2.Session
 import gergelysallai.mort.core.data.DirectoryListing
 import gergelysallai.mort.core.data.RemoteDirectoryEntry
 import org.slf4j.LoggerFactory
+import java.io.File
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executor
@@ -81,6 +82,24 @@ class SftpHandler(private val sshConnection: Connection,
                 }
             } catch (e: IOException) {
                 logger.error("Error while listing {}: ", concatPaths(directory.fileName, directory.parentDir), e)
+                callbackExecutor.execute {
+                    directoryListingListener.onDirectoryListError()
+                }
+            }
+        }
+    }
+
+    fun ls(path: String) {
+        sshExecutor.execute {
+            try {
+                val file = File(path)
+                val directory = stats(file.parent, file.name)
+                val directoryListing = lsSynchronous(directory)
+                callbackExecutor.execute {
+                    directoryListingListener.onDirectoryList(directoryListing)
+                }
+            } catch (e: IOException) {
+                logger.error("Error while listing {}: ", path, e)
                 callbackExecutor.execute {
                     directoryListingListener.onDirectoryListError()
                 }

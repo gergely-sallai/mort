@@ -12,7 +12,12 @@ import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -25,6 +30,8 @@ import gergelysallai.mort.android.connection.SftpState;
 import gergelysallai.mort.android.detail.Detail;
 import gergelysallai.mort.android.detail.DetailActivity;
 import gergelysallai.mort.android.detail.DetailFragment;
+import gergelysallai.mort.android.settings.Settings;
+import gergelysallai.mort.android.settings.SettingsActivity;
 import gergelysallai.mort.core.data.DirectoryListing;
 import gergelysallai.mort.core.data.RemoteDirectoryEntry;
 import gergelysallai.mort.core.ssh.ConnectionState;
@@ -36,6 +43,7 @@ import timber.log.Timber;
 
 
 import java.util.Locale;
+import java.util.Set;
 
 import static gergelysallai.mort.android.detail.DetailActivity.ISMOVIE_KEY;
 import static gergelysallai.mort.android.detail.DetailActivity.TITLE_KEY;
@@ -50,12 +58,14 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
 
     private static final String FRAGMENT_TAG = "mort.android.DetailsFragmentTag";
     private static final int RESULT_REQUEST_CODE = 1337;
-    private static final String MOVIES_FOLDER = "videos/movies";
-    private static final String TVSHOWS_FOLDER = "videos/tvshows";
+    private static final int FAV1 = 7663;
+    private static final int FAV2 = 7664;
+    private static final int FAV3 = 7665;
 
     private ConnectionManager connectionManager;
     private SftpHandler sftpHandler;
     private DirectoryListingAdapter adapter;
+    private Settings settings;
 
     private boolean isTwoPane;
     private String host;
@@ -90,6 +100,75 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        settings = Settings.loadSettings(this);
+        if (TextUtils.isEmpty(settings.moviesPath) || TextUtils.isEmpty(settings.tvShowPath)) {
+            startActivity(SettingsActivity.createIntent(this));
+        }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean hasFav = false;
+        final SubMenu subMenu = menu.findItem(R.id.overflow_bookmarks).getSubMenu();
+        subMenu.removeItem(FAV1);
+        subMenu.removeItem(FAV2);
+        subMenu.removeItem(FAV3);
+        if (!TextUtils.isEmpty(settings.favorite1)) {
+            hasFav = true;
+            subMenu.add(R.id.group_overflow_bookmarks, FAV1, Menu.NONE, getString(R.string.bookmark, 1));
+        }
+        if (!TextUtils.isEmpty(settings.favorite2)) {
+            hasFav = true;
+            subMenu.add(R.id.group_overflow_bookmarks, FAV2, Menu.NONE, getString(R.string.bookmark, 2));
+
+        }
+        if (!TextUtils.isEmpty(settings.favorite3)) {
+            hasFav = true;
+            subMenu.add(R.id.group_overflow_bookmarks, FAV3, Menu.NONE, getString(R.string.bookmark, 3));
+
+        }
+        menu.findItem(R.id.overflow_bookmarks).setVisible(hasFav);
+        menu.findItem(R.id.overflow_movies).setVisible(!TextUtils.isEmpty(settings.moviesPath));
+        menu.findItem(R.id.overflow_tvshows).setVisible(!TextUtils.isEmpty(settings.tvShowPath));
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                startActivity(SettingsActivity.createIntent(this));
+                return true;
+            case R.id.overflow_movies:
+                sftpHandler.ls(settings.moviesPath);
+                return true;
+            case R.id.overflow_tvshows:
+                sftpHandler.ls(settings.tvShowPath);
+                return true;
+            case FAV1:
+                sftpHandler.ls(settings.favorite1);
+                return true;
+            case FAV2:
+                sftpHandler.ls(settings.favorite2);
+                return true;
+            case FAV3:
+                sftpHandler.ls(settings.favorite3);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onItemClicked(RemoteDirectoryEntry item) {
         if (item.isDirectory) {
             showProgressPane();
@@ -119,7 +198,7 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
             getFragmentManager().beginTransaction().remove(fragment).commit();
         }
 
-        final String containerDir = isMovie ? MOVIES_FOLDER : TVSHOWS_FOLDER;
+        final String containerDir = isMovie ? settings.moviesPath : settings.tvShowPath;
         final String dirName = String.format(Locale.ENGLISH, "%s/%s (%d)", containerDir, title, year);
 
         logger.debug("Creating link for: {} in: {}", file.canonicalName, dirName);
