@@ -1,5 +1,6 @@
 buildscript {
-    ext.supportLibVersion = '27.0.2'
+    ext.supportLibVersion = '27.1.1'
+    ext.archLibVersion = '1.1.1'
     repositories {
         jcenter()
         google()
@@ -45,12 +46,12 @@ dependencies {
     compile project(':core')
 
     compile 'com.arcao:slf4j-timber:3.0'
-    compile "android.arch.lifecycle:runtime:1.0.3"
-    compile "android.arch.lifecycle:extensions:1.0.0"
-    annotationProcessor "android.arch.lifecycle:compiler:1.0.0"
+    compile "android.arch.lifecycle:runtime:$archLibVersion"
+    compile "android.arch.lifecycle:extensions:$archLibVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$archLibVersion"
 
     compile "com.android.support:appcompat-v7:$supportLibVersion"
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support.constraint:constraint-layout:1.1.3'
     compile "com.android.support:support-v4:$supportLibVersion"
     compile "com.android.support:recyclerview-v7:$supportLibVersion"
     compile "com.android.support:design:$supportLibVersion"
