@@ -1,5 +1,5 @@
 buildscript {
-    ext.supportLibVersion = '27.1.1'
+    ext.supportLibVersion = '28.0.0'
     ext.archLibVersion = '1.1.1'
     repositories {
         jcenter()
@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.3.1'
     }
 }
 
@@ -20,13 +20,13 @@ repositories {
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "gergelysallai.mort.android"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
@@ -42,19 +42,21 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':core')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':core')
 
-    compile 'com.arcao:slf4j-timber:3.0'
-    compile "android.arch.lifecycle:runtime:$archLibVersion"
-    compile "android.arch.lifecycle:extensions:$archLibVersion"
+    implementation 'com.arcao:slf4j-timber:3.0'
+    implementation "android.arch.lifecycle:runtime:$archLibVersion"
+    implementation "android.arch.lifecycle:extensions:$archLibVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$archLibVersion"
 
-    compile "com.android.support:appcompat-v7:$supportLibVersion"
-    compile 'com.android.support.constraint:constraint-layout:1.1.3'
-    compile "com.android.support:support-v4:$supportLibVersion"
-    compile "com.android.support:recyclerview-v7:$supportLibVersion"
-    compile "com.android.support:design:$supportLibVersion"
+    implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation "com.android.support:support-v4:$supportLibVersion"
+    implementation "com.android.support:recyclerview-v7:$supportLibVersion"
+    implementation "com.android.support:design:$supportLibVersion"
+    implementation "com.android.support:support-annotations:$supportLibVersion"
+    implementation "com.android.support:recyclerview-selection:$supportLibVersion"
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
