@@ -1,6 +1,5 @@
 package gergelysallai.mort.android.list;
 
-import android.app.Fragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -9,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.Snackbar;
@@ -193,9 +193,9 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
     @Override
     public void onResult(@NonNull RemoteDirectoryEntry file, @NonNull String title, int year, boolean isMovie) {
         if (isTwoPane) {
-            final Fragment fragment = getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+            final Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
             verifyNotNull(fragment, "Fragment must not be null");
-            getFragmentManager().beginTransaction().remove(fragment).commit();
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
         }
 
         final String containerDir = isMovie ? settings.moviesPath : settings.tvShowPath;
@@ -297,7 +297,7 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
     private void openDetails(RemoteDirectoryEntry item) {
         if (isTwoPane) {
             final DetailFragment fragment = DetailFragment.createInstance(item);
-            getFragmentManager()
+            getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.item_detail_container, fragment, FRAGMENT_TAG)
                     .addToBackStack(FRAGMENT_TAG)

@@ -37,9 +37,9 @@ public class DetailActivity extends LifecycleAppCompatActivity implements Detail
         toolbar = findViewById(R.id.toolbar);
 
         final RemoteDirectoryEntry directoryEntry = (RemoteDirectoryEntry) getIntent().getSerializableExtra(DIRECTORY_ENTRY_KEY);
-        if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             final DetailFragment detailFragment = DetailFragment.createInstance(directoryEntry);
-            getFragmentManager()
+            getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.details_fragment_container, detailFragment, FRAGMENT_TAG)
                     .commit();
