@@ -23,8 +23,8 @@ class ViewHolderFile extends ViewHolderBase {
     }
 
     @Override
-    void bind(RemoteDirectoryEntry data) {
-        super.bind(data);
+    void bind(RemoteDirectoryEntry data, boolean isActivated) {
+        super.bind(data, isActivated);
         final Resources resources = itemView.getResources();
         fileName.setText(data.fileName);
         imageView.setImageDrawable(fileDrawable);

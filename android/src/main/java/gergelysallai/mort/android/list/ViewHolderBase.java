@@ -16,6 +16,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.selection.ItemDetailsLookup;
+
 import gergelysallai.mort.android.R;
 import gergelysallai.mort.core.data.RemoteDirectoryEntry;
 
@@ -41,8 +44,9 @@ abstract class ViewHolderBase extends RecyclerView.ViewHolder implements View.On
         overFlow.setOnClickListener(this);
     }
 
-    void bind(RemoteDirectoryEntry data) {
+    void bind(RemoteDirectoryEntry data, boolean isActivated) {
         this.data = data;
+        itemView.setActivated(isActivated);
     }
 
     @Override
@@ -73,6 +77,13 @@ abstract class ViewHolderBase extends RecyclerView.ViewHolder implements View.On
         return false;
     }
 
+    public ItemDetailsLookup.ItemDetails<String> getItemDetails() {
+        if (data == null) {
+            return null;
+        }
+        return new DirectoryDetailsEntry(getAdapterPosition(), data.canonicalName);
+    }
+
     private void copyTextToClipboard(String text) {
         ClipData clip = ClipData.newPlainText("MoRT Copied path", text);
         clipboardManager.setPrimaryClip(clip);
@@ -98,5 +109,26 @@ abstract class ViewHolderBase extends RecyclerView.ViewHolder implements View.On
     private static View inflateView(@LayoutRes int layoutResId, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         return inflater.inflate(layoutResId, parent, false);
+    }
+
+    private static class DirectoryDetailsEntry extends ItemDetailsLookup.ItemDetails<String> {
+
+        private final int position;
+        private final String key;
+
+        public DirectoryDetailsEntry(int position, String key) {
+            this.position = position;
+            this.key = key;
+        }
+
+        @Override
+        public int getPosition() {
+            return position;
+        }
+
+        @Override
+        public String getSelectionKey() {
+            return key;
+        }
     }
 }

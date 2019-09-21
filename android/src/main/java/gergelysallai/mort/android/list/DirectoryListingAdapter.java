@@ -1,8 +1,13 @@
 package gergelysallai.mort.android.list;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.selection.SelectionTracker;
+
 import gergelysallai.mort.android.connection.SftpState;
 import gergelysallai.mort.android.list.comparator.FileNameComparator;
 import gergelysallai.mort.core.data.DirectoryListing;
@@ -24,14 +29,18 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
 
     private final OnItemClickListener<RemoteDirectoryEntry> itemClickListener;
 
+    @Nullable
+    private SelectionTracker<String> tracker;
+
     private List<RemoteDirectoryEntry> entryList = Collections.emptyList();
 
     DirectoryListingAdapter(OnItemClickListener<RemoteDirectoryEntry> itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 
+    @NonNull
     @Override
-    public ViewHolderBase onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolderBase onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_DIRECTORY:
                 return new ViewHolderDirectory(parent, itemClickListener);
@@ -45,13 +54,27 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
     }
 
     @Override
-    public void onBindViewHolder(ViewHolderBase holder, int position) {
-        holder.bind(entryList.get(position));
+    public void onBindViewHolder(@NonNull ViewHolderBase holder, int position) {
+        final boolean isActivated;
+        if (tracker != null) {
+            isActivated = tracker.isSelected(entryList.get(position).canonicalName);
+        } else {
+            isActivated = false;
+        }
+        holder.bind(entryList.get(position), isActivated);
+    }
+
+    public List<RemoteDirectoryEntry> getData() {
+        return entryList;
     }
 
     @Override
     public int getItemCount() {
         return entryList.size();
+    }
+
+    public void setTracker(@Nullable SelectionTracker<String> tracker) {
+        this.tracker = tracker;
     }
 
     @Override
@@ -71,6 +94,9 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
     }
 
     private void updateDirectoryListing(DirectoryListing directoryListing) {
+        if (tracker != null) {
+            tracker.clearSelection();
+        }
         entryList = new ArrayList<>();
         entryList.addAll(directoryListing.entries);
         Collections.sort(entryList, fileNameComparator);

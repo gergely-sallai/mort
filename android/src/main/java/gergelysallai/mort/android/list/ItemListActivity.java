@@ -22,6 +22,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.recyclerview.selection.SelectionPredicates;
+import androidx.recyclerview.selection.SelectionTracker;
+import androidx.recyclerview.selection.StableIdKeyProvider;
+import androidx.recyclerview.selection.StorageStrategy;
+
 import gergelysallai.mort.android.LifecycleAppCompatActivity;
 import gergelysallai.mort.android.R;
 import gergelysallai.mort.android.login.LoginActivity;
@@ -246,6 +252,16 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         adapter = new DirectoryListingAdapter(this);
         recyclerView.setAdapter(adapter);
+        final SelectionTracker<String> tracker = new SelectionTracker.Builder<>(
+                "FileSelection",
+                recyclerView,
+                new ItemKeyProvider(adapter),
+                new DirectoryItemDetailsLookup(recyclerView),
+                StorageStrategy.createStringStorage()
+        )
+                .withSelectionPredicate(SelectionPredicates.<String>createSelectAnything())
+                .build();
+        adapter.setTracker(tracker);
     }
 
     private void showProgressPane() {
