@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import androidx.recyclerview.selection.SelectionPredicates;
 import androidx.recyclerview.selection.SelectionTracker;
-import androidx.recyclerview.selection.StableIdKeyProvider;
 import androidx.recyclerview.selection.StorageStrategy;
 
 import gergelysallai.mort.android.LifecycleAppCompatActivity;
@@ -71,6 +70,7 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
     private ConnectionManager connectionManager;
     private SftpHandler sftpHandler;
     private DirectoryListingAdapter adapter;
+    private SelectionTracker<String> tracker;
     private Settings settings;
 
     private boolean isTwoPane;
@@ -93,7 +93,7 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
 
         loadValuesFromIntent(getIntent());
         initViews();
-        setupRecyclerView(recyclerView);
+        setupRecyclerView(recyclerView, savedInstanceState);
 
         connectionManager = ViewModelProviders.of(this).get(ConnectionManager.class);
         if (!connectionManager.isInitialized()) {
@@ -221,6 +221,12 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
         });
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        tracker.onSaveInstanceState(outState);
+    }
+
     private void initViews() {
         isTwoPane = findViewById(R.id.item_detail_container) != null;
         toolbar = findViewById(R.id.toolbar);
@@ -249,10 +255,10 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
         password = intent.getStringExtra(LoginActivity.PASSWORD_KEY);
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView, Bundle savedInstanceState) {
         adapter = new DirectoryListingAdapter(this);
         recyclerView.setAdapter(adapter);
-        final SelectionTracker<String> tracker = new SelectionTracker.Builder<>(
+        tracker = new SelectionTracker.Builder<>(
                 "FileSelection",
                 recyclerView,
                 new ItemKeyProvider(adapter),
@@ -262,6 +268,9 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
                 .withSelectionPredicate(SelectionPredicates.<String>createSelectAnything())
                 .build();
         adapter.setTracker(tracker);
+        if (savedInstanceState != null) {
+            tracker.onRestoreInstanceState(savedInstanceState);
+        }
     }
 
     private void showProgressPane() {

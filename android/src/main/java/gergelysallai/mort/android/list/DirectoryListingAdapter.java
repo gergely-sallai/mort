@@ -32,7 +32,7 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
     @Nullable
     private SelectionTracker<String> tracker;
 
-    private List<RemoteDirectoryEntry> entryList = Collections.emptyList();
+    private DirectoryListing directoryListing; // lateinit
 
     DirectoryListingAdapter(OnItemClickListener<RemoteDirectoryEntry> itemClickListener) {
         this.itemClickListener = itemClickListener;
@@ -57,20 +57,27 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
     public void onBindViewHolder(@NonNull ViewHolderBase holder, int position) {
         final boolean isActivated;
         if (tracker != null) {
-            isActivated = tracker.isSelected(entryList.get(position).canonicalName);
+            isActivated = tracker.isSelected(entriesOrEmptyList().get(position).canonicalName);
         } else {
             isActivated = false;
         }
-        holder.bind(entryList.get(position), isActivated);
+        holder.bind(entriesOrEmptyList().get(position), isActivated);
+    }
+
+    private List<RemoteDirectoryEntry> entriesOrEmptyList() {
+        if (directoryListing == null) {
+            return Collections.emptyList();
+        }
+        return directoryListing.entries;
     }
 
     public List<RemoteDirectoryEntry> getData() {
-        return entryList;
+        return entriesOrEmptyList();
     }
 
     @Override
     public int getItemCount() {
-        return entryList.size();
+        return entriesOrEmptyList().size();
     }
 
     public void setTracker(@Nullable SelectionTracker<String> tracker) {
@@ -79,7 +86,7 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
 
     @Override
     public int getItemViewType(int position) {
-        RemoteDirectoryEntry entry = entryList.get(position);
+        RemoteDirectoryEntry entry = entriesOrEmptyList().get(position);
         if (isParent(entry)) {
             return TYPE_PARENT;
         }
@@ -94,12 +101,18 @@ class DirectoryListingAdapter extends RecyclerView.Adapter<ViewHolderBase> imple
     }
 
     private void updateDirectoryListing(DirectoryListing directoryListing) {
-        if (tracker != null) {
+        if (tracker != null &&
+            this.directoryListing != null &&
+            !this.directoryListing.current.equals(directoryListing.current)
+        ) {
             tracker.clearSelection();
         }
-        entryList = new ArrayList<>();
-        entryList.addAll(directoryListing.entries);
-        Collections.sort(entryList, fileNameComparator);
+        final DirectoryListing listingUpdate = new DirectoryListing(
+                directoryListing.current,
+                new ArrayList<>(directoryListing.entries)
+        );
+        Collections.sort(listingUpdate.entries, fileNameComparator);
+        this.directoryListing = listingUpdate;
         notifyDataSetChanged();
     }
 
