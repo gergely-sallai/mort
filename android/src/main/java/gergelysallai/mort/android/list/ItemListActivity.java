@@ -265,7 +265,7 @@ public class ItemListActivity extends LifecycleAppCompatActivity implements OnIt
                 new DirectoryItemDetailsLookup(recyclerView),
                 StorageStrategy.createStringStorage()
         )
-                .withSelectionPredicate(SelectionPredicates.<String>createSelectAnything())
+                .withSelectionPredicate(new FileSelectionPredicate(adapter))
                 .build();
         adapter.setTracker(tracker);
         if (savedInstanceState != null) {
